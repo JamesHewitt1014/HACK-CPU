@@ -1,0 +1,111 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/5/CPU.hdl
+/**
+ * The Hack Central Processing unit (CPU).
+ * Parses the binary code in the instruction input and executes it according to the
+ * Hack machine language specification. In the case of a C-instruction, computes the
+ * function specified by the instruction. If the instruction specifies to read a memory
+ * value, the inM input is expected to contain this value. If the instruction specifies
+ * to write a value to the memory, sets the outM output to this value, sets the addressM
+ * output to the target address, and asserts the writeM output (when writeM = 0, any
+ * value may appear in outM).
+ * If the reset input is 0, computes the address of the next instruction and sets the
+ * pc output to that value. If the reset input is 1, sets pc to 0.
+ * Note: The outM and writeM outputs are combinational: they are affected by the
+ * instruction's execution during the current cycle. The addressM and pc outputs are
+ * clocked: although they are affected by the instruction's execution, they commit to
+ * their new values only in the next cycle.
+ */
+
+/*
+           C            A
+* [15]     1            0          
+* [14]     1            ...
+* [13]     1            ...
+* [12]     a  (a/m)     ...
+* [11]     c1           ...
+* [10]     c2           ...
+* [9]      c3           ...
+* [8]      c4           ...
+* [7]      c5           ...
+* [6]      c6           ...
+* [5]      d1 (A)       ...
+* [4]      d2 (D)       ...
+* [3]      d3 (M)       ...
+* [2]      j1 (neg)     ...
+* [1]      j2 (zero)    ...
+* [0]      j3 (pos)     ...            
+*/
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],   // Address in data memory (of M)
+        pc[15];    // address of next instruction
+
+    PARTS:
+    // A or D instruction
+    Mux16(a=instruction, b=aluOutput, sel=instruction[15], out=registerAInput);
+
+    //Register A
+    Mux(a=true, b=instruction[5], sel=instruction[15], out=loadA);
+    ARegister(in=registerAInput, load=loadA, out=registerA, out[0..14]=addressM);
+    //Address or Memory into ALU
+    Mux16(a=registerA, b=inM, sel=instruction[12], out=AluInputA);
+    
+    //Register D
+    DRegister(in=aluOutput, load=loadD, out=registerD);
+
+    //ALU
+    ALU(x=registerD, 
+        y=AluInputA,
+        zx= instruction[11],
+        nx= instruction[10],
+        zy= instruction[9],
+        ny= instruction[8],
+        f=  instruction[7],
+        no= instruction[6],
+        zr=zr, 
+        ng=ng,       
+        out=aluOutput,
+        out=outM);
+
+    // Control - Write, Jump, and Load Reg-D should always be zero if an A instruction
+    Mux16(
+        a=false, 
+        b=instruction, 
+        sel=instruction[15],
+        out[4]=loadD,
+        out[3]=writeM,
+        out[2]=jumpNeg, 
+        out[1]=jumpZero, 
+        out[0]=jumpPos); 
+
+    //Jumping
+    // 000 No  - jump never
+    // 001 JGT - jump positive (not ng and not zr)
+    // 010 JEQ - jump zero     (zr)
+    // 011 JGE - jump zero+    (not ng)
+    // 100 JLT - jump negative (ng)
+    // 101 JNE - jump not zero (not zr)
+    // 110 JLE - jump zero-    (zr or ng)
+    // 111 JMP - jump always
+    // Note that opposite of negative (ng) is (zero OR positive) not just (positive)
+    Or(a=ng, b=zr, out=ngOrZr);
+    Not(in=ngOrZr, out=pos);
+    And(a=zr, b=jumpZero, out=zero);
+    And(a=pos, b=jumpPos, out=greater);
+    And(a=ng, b=jumpNeg, out=negative);
+    Or(a=zero, b=greater, out=temp);
+    Or(a=temp, b=negative, out=jump);
+    PC(in=registerA, load=jump, inc=true, reset=reset, out[0..14]=pc[0..14]);
+}
