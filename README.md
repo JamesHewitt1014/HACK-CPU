@@ -13,30 +13,30 @@ Source: Wikipedia
 * The HACK CPU has two registers Register A and Register D.
 * The HACK Computer has basic memory-mapped I/O for keyboard and display.
 
-Bit | Meaning
+Instruction Bit | Purpose
 --- | ---
 15  | opcode - determines instruction type (0 for A, 1 for C)
 14  | n/a
 13  | n/a
-12  | use A register or Memory in ALU operation
+12  | use A register or Data Memory in ALU operation (0 for register, 1 for memory)
 11  | ALU Operation - zero the x input
 10  | ALU Operation - negate the x input
 9   | ALU Operation - zero the y input
 8   | ALU Operation - negate the y input
-7   | ALU Operation - compute addition or logical AND
+7   | ALU Operation - compute addition (x+y) or computer logical AND (x&y) (0 for add, 1 for and)
 6   | ALU Operation - negate the ALU output
 5   | Destination bit - write ALU output to A register
 4   | Destination bit - write ALU output to D register
-3   | Destination bit - write ALU output to memory 
+3   | Destination bit - write ALU output to memory
 2   | Jump bit - jump if ALU output negative
 1   | Jump bit - jump if ALU output zero
 0   | Jump bit - jump if ALU output positive
 
 **CPU**
-
+https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/CPU/CPU.svg
 
 **ALU**
-![image](https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Project%202%20-%20ALU/ALU-HACK-DIAGRAM.svg)
+https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/ALU/ALU-HACK-DIAGRAM.svg
 
 # Project
 Note that the .hdl and .asm files in this project are exercises from the Book/Course that I completed. These files cover the implementation of multiple aspects of the HACK Cpu, including; 
