@@ -4,7 +4,7 @@ This is an implementation of the [HACK Computer](https://en.wikipedia.org/wiki/H
 ### Basic Architecture Overview
 **Computer**
 ![image](https://github.com/user-attachments/assets/598c3094-a34f-40b6-9207-681e80468f99)
-Source: Wikipedia
+Source: [Wikipedia](https://upload.wikimedia.org/wikipedia/commons/7/76/Hack_Computer_Block_Diagram_2.png)
 
 **Summary**
 * Instructions are 16-bit. There are Two types; "A" and "C"
@@ -33,10 +33,10 @@ Instruction Bit | Purpose
 0   | Jump bit - jump if ALU output positive
 
 **CPU**
-https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/CPU/CPU.svg
+![image](https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/CPU/CPU.svg)
 
 **ALU**
-https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/ALU/ALU-HACK-DIAGRAM.svg
+![image](https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/ALU/ALU-HACK-DIAGRAM.svg)
 
 # Project
 Note that the .hdl and .asm files in this project are exercises from the Book/Course that I completed. These files cover the implementation of multiple aspects of the HACK Cpu, including; 
