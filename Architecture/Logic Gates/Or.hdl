@@ -15,5 +15,4 @@ CHIP Or {
     Not(in=b, out=nb);
     And(a=na, b=nb, out=naANDnb);
     Not(in=naANDnb, out=out);
-    //// Replace this comment with your code.
 }

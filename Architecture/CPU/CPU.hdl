@@ -19,7 +19,7 @@
  * their new values only in the next cycle.
  */
 
-/*
+/* Instruction Bits
            C            A
 * [15]     1            0          
 * [14]     1            ...
@@ -58,12 +58,12 @@ CHIP CPU {
 
     //Register A
     Mux(a=true, b=instruction[5], sel=instruction[15], out=loadA);
-    ARegister(in=registerAInput, load=loadA, out=registerA, out[0..14]=addressM);
+    Register(in=registerAInput, load=loadA, out=registerA, out[0..14]=addressM);
     //Address or Memory into ALU
     Mux16(a=registerA, b=inM, sel=instruction[12], out=AluInputA);
     
     //Register D
-    DRegister(in=aluOutput, load=loadD, out=registerD);
+    Register(in=aluOutput, load=loadD, out=registerD);
 
     //ALU
     ALU(x=registerD, 

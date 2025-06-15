@@ -11,10 +11,9 @@ CHIP Inc16 {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
     Add16(a =in, b[0]=true, out =out);
 
     // ALTERNATE SOLUTION
     // Chain together half-adders - 
-    // technically would be more efficient technically more annoying to type out... 
+    // technically would be more efficient but more annoying to type out... 
 }
