@@ -2,11 +2,9 @@
 This is an implementation of the [HACK Computer](https://en.wikipedia.org/wiki/Hack_computer) from the book **Elements of Computing Systems: Building a Modern Computer from First Principles** and the associated course **Nand2Tetris**.
 
 ### Basic Architecture Overview
-**Computer**
 ![image](https://github.com/user-attachments/assets/598c3094-a34f-40b6-9207-681e80468f99)
 Source: [Wikipedia](https://upload.wikimedia.org/wikipedia/commons/7/76/Hack_Computer_Block_Diagram_2.png)
 
-**Summary**
 * Instructions are 16-bit. There are two types of instruction; "A" and "C"
     * A instructions - the first bit (bit-15) represents the instruction type and the remaining bits are a 15-bit address.
     * C instructions - remaining bits indicate what operations the cpu should perform. See table below.
@@ -33,9 +31,11 @@ Instruction Bit | Purpose
 0   | Jump bit - jump if ALU output positive
 
 **CPU**
+
 ![image](https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/CPU/CPU.svg)
 
 **ALU**
+
 ![image](https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/ALU/ALU-HACK-DIAGRAM.svg)
 
 # Project
