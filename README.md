@@ -7,8 +7,8 @@ This is an implementation of the [HACK Computer](https://en.wikipedia.org/wiki/H
 Source: [Wikipedia](https://upload.wikimedia.org/wikipedia/commons/7/76/Hack_Computer_Block_Diagram_2.png)
 
 **Summary**
-* Instructions are 16-bit. There are Two types; "A" and "C"
-    * A instructions - the first bit (bit 15) represents the instruction types and the remaining bits are a 15-bit address.
+* Instructions are 16-bit. There are two types of instruction; "A" and "C"
+    * A instructions - the first bit (bit-15) represents the instruction type and the remaining bits are a 15-bit address.
     * C instructions - remaining bits indicate what operations the cpu should perform. See table below.
 * The HACK CPU has two registers Register A and Register D.
 * The HACK Computer has basic memory-mapped I/O for keyboard and display.
@@ -39,7 +39,7 @@ Instruction Bit | Purpose
 ![image](https://github.com/JamesHewitt1014/HACK-CPU/blob/main/Architecture/ALU/ALU-HACK-DIAGRAM.svg)
 
 # Project
-Note that the .hdl and .asm files in this project are exercises from the Book/Course that I completed. These files cover the implementation of multiple aspects of the HACK Cpu, including; 
+Note that the .hdl and .asm files in this project are exercises from the Book/Course that I completed. These files cover the implementation of multiple aspects of the HACK CPU, including; 
 * the construction of basic logic gates starting from NAND gates,
 * the adder and arithmetic logic unit (ALU),
 * the memory,
