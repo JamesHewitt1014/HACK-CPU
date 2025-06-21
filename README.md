@@ -21,7 +21,7 @@ Instruction Bit | Purpose
 10  | ALU Operation - negate the x input (register D)
 9   | ALU Operation - zero the y input (register A / data memory)
 8   | ALU Operation - negate the y input (register A / data memory)
-7   | ALU Operation - compute addition (x+y) or computer logical AND (x&y) (0 for add, 1 for and)
+7   | ALU Operation - compute addition (x+y) or computer logical AND (x&y) (0 for and, 1 for add)
 6   | ALU Operation - negate the ALU output
 5   | Destination bit - write ALU output to A register
 4   | Destination bit - write ALU output to D register
