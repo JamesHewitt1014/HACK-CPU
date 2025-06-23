@@ -6,12 +6,20 @@ import (
 	"strings"
 )
 
-//TODO: 
-// 1. Add a CLI
-// 2. Testing
-
 func main() {
-	var inputFilePath string = "test.asm"
+
+	if len(os.Args) != 2 {
+		fmt.Println("Error: incorrect number of arguments")
+		return
+	}
+
+	var inputFilePath string = os.Args[1]
+	fileName, isAsmFile := strings.CutSuffix(os.Args[1], ".asm")
+	if !isAsmFile {	
+		fmt.Println("Error: not an assembly file")
+		return
+	}
+
 	input, err := os.ReadFile(inputFilePath)
 	if err != nil {
 		fmt.Println("Error reading file:", err)
@@ -25,7 +33,7 @@ func main() {
 		return
 	}
 
-	var outputFilePath string = "output.asm"
+	var outputFilePath string = fileName + ".hack"
 	err = os.WriteFile(outputFilePath, []byte(output), 0644)
 	if err != nil {
 		fmt.Println("Error creating file:", err)

@@ -1,8 +1,6 @@
 package main
 
-import (
-	"strings"
-)
+import "strings"
 
 type Instruction interface {
 	Convert() (string, error)

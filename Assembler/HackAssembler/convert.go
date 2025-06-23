@@ -8,17 +8,8 @@ import (
 	"unicode"
 )
 
-var dest = map[string]string{
-	"M":   "001",
-	"D":   "010",
-	"DM":  "011",
-	"A":   "100",
-	"AM":  "101",
-	"AD":  "110",
-	"ADM": "111",
-}
-
 var jump = map[string]string{
+	"":    "000",
 	"JGT": "001",
 	"JEQ": "010",
 	"JGE": "011",
@@ -28,7 +19,7 @@ var jump = map[string]string{
 	"JMP": "111",
 }
 
-// NOTE: 
+// NOTE:
 // First bit indicates use of Register A or Data Memory input for ALU
 // The other bits are the control bits for the ALU
 var comp = map[string]string{
@@ -62,27 +53,33 @@ var comp = map[string]string{
 	"D|M": "1010101",
 }
 
-func convertInstructions(instructions []Instruction) (string, error){
+func convertInstructions(instructions []Instruction) (string, error) {
 	var sb strings.Builder
 	for _, instruction := range instructions {
 		machineCode, err := instruction.Convert()
 		if err != nil {
 			return "", err
 		}
-		sb.WriteString(machineCode + "\n")	
+		sb.WriteString(machineCode + "\n")
 	}
 	return sb.String(), nil
 }
 
 func convertDest(mnemonic string) (string, error) {
-	if mnemonic == ""{
-		return "000", nil
+	if len(mnemonic) > 3 {
+		return "", errors.New("invalid input for destination: " + mnemonic)
 	}
-	bits, found := dest[mnemonic]
-	if found == false {
-		return "", errors.New("invalid input destination: " + mnemonic)
+	
+	bits := map[bool]string {true: "1", false: "0"}
+	containsA := strings.Contains(mnemonic, "A")
+	containsD := strings.Contains(mnemonic, "D")
+	containsM := strings.Contains(mnemonic, "M")	
+
+	if mnemonic != "" && !containsA && !containsD && !containsM {
+		return "", errors.New("invalid input for destination: " + mnemonic)
 	}
-	return bits, nil
+
+	return bits[containsA] + bits[containsD] + bits[containsM], nil
 }
 
 func convertComp(mnemonic string) (string, error) {
@@ -93,10 +90,7 @@ func convertComp(mnemonic string) (string, error) {
 	return bits, nil
 }
 
-func convertJump(mnemonic string) (string, error){
-	if mnemonic == "" {
-		return "000", nil
-	}
+func convertJump(mnemonic string) (string, error) {
 	bits, found := jump[mnemonic]
 	if found == false {
 		return "", errors.New("invalid input jump: " + mnemonic)
@@ -121,21 +115,21 @@ func (i CInstruction) Convert() (string, error) {
 }
 
 func (i AInstruction) Convert() (string, error) {
-	if isNumber(i.Value){
-		decimal, _ := strconv.Atoi(i.Value)	
+	if isNumber(i.Value) {
+		decimal, _ := strconv.Atoi(i.Value)
 		binary, err := DecimalAsBinary(decimal)
 		if err != nil {
 			return "", err
 		}
-		return "1" + binary, nil
+		return "0" + binary, nil
 	}
-	
+
 	if address, found := Symbols[i.Value]; found {
 		binary, err := DecimalAsBinary(address)
 		if err != nil {
 			return "", err
 		}
-		return "1" + binary, nil
+		return "0" + binary, nil
 	}
 
 	address := AddSymbol(i.Value)
@@ -143,13 +137,13 @@ func (i AInstruction) Convert() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return "1" + binary, nil
+	return "0" + binary, nil
 }
 
 // Converts a decimal integer to a string of containing its 15-bit binary representation
-func DecimalAsBinary(decimal int) (string, error){
+func DecimalAsBinary(decimal int) (string, error) {
 	if decimal < 0 || decimal > 32767 {
-		return "", errors.New("Decimal " + strconv.Itoa(decimal) +" out of range")
+		return "", errors.New("Decimal " + strconv.Itoa(decimal) + " out of range")
 	}
 	return fmt.Sprintf("%015b", decimal), nil
 }
@@ -157,34 +151,9 @@ func DecimalAsBinary(decimal int) (string, error){
 // Checks if a string is a decimal number (no signs)
 func isNumber(s string) bool {
 	for _, char := range s {
-		if unicode.IsDigit(char) == false{
+		if unicode.IsDigit(char) == false {
 			return false
 		}
 	}
 	return true
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

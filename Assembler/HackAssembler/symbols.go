@@ -34,13 +34,15 @@ var Symbols = map[string]int{
 var counter int = 16
 
 func AddLabel(line string, lineNumber int) (error){	
-	label, found := strings.CutSuffix(line, ")")
+	// Remove "(" and everything after ")"
+	label, found := strings.CutSuffix(line[1:], ")")
 	if !found {
 		return errors.New("label syntax incorrect: " + label)
 	}
 	if _, found := Symbols[label]; found {	
 		return errors.New("label already exists: " + label)	
 	}	
+	label = label
 	Symbols[label] = lineNumber
 	return nil
 }

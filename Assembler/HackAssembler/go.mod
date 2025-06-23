@@ -1,3 +1,3 @@
-module github.com/JamesHewitt1014/Assembler
+module HackAssembler
 
 go 1.22.2
