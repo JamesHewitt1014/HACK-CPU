@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 	. "vm/types"
+	"errors"
+	"fmt"
 )
 
 type VMParser struct {
@@ -24,29 +26,36 @@ func New(input string) *VMParser {
 }
 
 func (p *VMParser) IsComplete() bool {
-	return p.index >= len(p.lines)
+	return p.index >= len(p.lines) - 1
 }
 
 func (p *VMParser) nextLine() (string, bool) {
 	isComplete := p.IsComplete()
 	if !isComplete {
+		line := p.lines[p.index]
 		p.index++
+		return line, p.IsComplete()
 	}
-	line := p.lines[p.index]
-	return line, isComplete
+	return "", isComplete
 }
+
+// TODO: IDEA
+// What if instead of (Command, error)
+// It was (Command, bool)
+// And it returns if complete
+// Errors can be printed or maybe its an additional return type idk
 
 func (p *VMParser) NextCommand() (Command, error) {
 	line, isComplete := p.nextLine()
 	if (isComplete) {
-		return Command{}, nil //TODO: ADD ERROR HANDLING
+		return Command{}, errors.New("IsComplete") //TODO: ADD ERROR HANDLING
 	}
 
 	tokens := strings.Fields(line)
 
 	cmdType, found := getCommandType[tokens[0]]
 	if !found {
-		return Command{}, nil // TODO: ADD ERROR HANDLING
+		return Command{}, errors.New(fmt.Sprintf("Not Found, %v", tokens)) // TODO: ADD ERROR HANDLING
 	}
 
 	switch cmdType {

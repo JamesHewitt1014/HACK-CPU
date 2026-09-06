@@ -18,7 +18,7 @@ var binaryOps = map[Operation]string{
 }
 
 func (w *asmWriter) writeArithmetic(operation Operation) {
-	instruction := binaryOps[operation] // M = Operation(M, D)
+	instruction, ok := binaryOps[operation] // M = Operation(M, D)
 	switch operation {
 	// Note: Instead of popping the second value and pushing the result, we can just replace the second value with the result
 	case ADD, SUB, AND, OR:
@@ -36,7 +36,8 @@ func (w *asmWriter) writeArithmetic(operation Operation) {
 	case EQ, LT, GT:
 		w.comparison(instruction)
 	default:
-		panic(fmt.Sprintf("invalid operation: %s", operation))
+		fmt.Printf("%s, %s, %s", operation, instruction, ok)
+		panic(fmt.Sprintf("invalid operation: %s", instruction))
 	}
 }
 

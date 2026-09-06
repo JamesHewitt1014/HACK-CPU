@@ -26,6 +26,8 @@ func (w *asmWriter) Output() string {
 }
 
 func (w *asmWriter) WriteCommand(cmd Command) {
+	fmt.Sprintf("CMD: %s", cmd.Type)
+
 	w.writeComment(cmd)
 	switch cmd.Type {
 	case PUSH:
