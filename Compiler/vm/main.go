@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"path/filepath"
 )
 
 func main() {
@@ -18,8 +19,7 @@ func main() {
 	// }
 
 	var inputFilePath string = os.Args[1]
-	fileName, isVMFile := strings.CutSuffix(os.Args[1], ".vm")
-	if !isVMFile {	
+	if filepath.Ext(inputFilePath) != ".vm" {
 		fmt.Println("Error: not a VM file")
 		return
 	}
@@ -33,10 +33,12 @@ func main() {
 
 	fmt.Print(input)
 
+	fileName := strings.TrimSuffix(filepath.Base(inputFilePath), ".vm")
 	output := translate(stringInput, fileName)
 	fmt.Println(output)
 
-	var outputFilePath string = fileName + ".asm"
+
+	outputFilePath := strings.TrimSuffix(inputFilePath, ".vm") + ".asm"
 	err = os.WriteFile(outputFilePath, []byte(output), 0644)
 	if err != nil {
 		fmt.Println("Error creating file:", err)

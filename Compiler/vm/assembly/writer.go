@@ -49,10 +49,11 @@ func (w *asmWriter) add(lines ...string) {
 	}
 }
 
-func (w *asmWriter) nextLabel(prefix string) string {
-	label := fmt.Sprintf("%s.%d", prefix, w.labelCounter)
+// TODO: Revisit, want more robust label generation
+func (w *asmWriter) nextLabelID() int {
+	id := w.labelCounter
 	w.labelCounter++
-	return label
+	return id
 }
 
 func (w *asmWriter) writeComment(cmd Command) {

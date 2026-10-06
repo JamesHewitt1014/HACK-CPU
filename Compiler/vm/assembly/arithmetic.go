@@ -24,7 +24,7 @@ func (w *asmWriter) writeArithmetic(operation Operation) {
 	case ADD, SUB, AND, OR:
 		w.popToD()
 		w.add(
-			"A=M-1",     // A = SP - 1 (assumes A is already the SP address following popToD, SP-1 is the value at the top of the stack)
+			"A=A-1",     // A = SP - 1 (assumes A is already the SP address following popToD, SP-1 is the value at the top of the stack)
 			instruction, // RAM[SP-1] = Operation(D, RAM[SP-1])
 		)
 	case NOT, NEG:
@@ -42,17 +42,30 @@ func (w *asmWriter) writeArithmetic(operation Operation) {
 }
 
 func (w *asmWriter) comparison(jumpOp string) {
-	labelTrue := w.nextLabel("TRUE")
-	labelEnd := w.nextLabel("END")
-	w.popToD() // D = y
+	labelID := w.nextLabelID()
+	labelTrue := fmt.Sprintf("TRUE.%d", labelID)
+	labelEnd := fmt.Sprintf("END.%d", labelID)
+	w.popToD() // D = x
 	w.add(
-		"A=M-1", // A = SP-1  (assumes A is already the SP address following popToD)
-		"D=M-D", // D = x - y (where x is current value at SP-1)
+		"A=A-1", // A = SP-1  (assumes A is already the SP address following popToD)
+		"D=D-M", // D = x - y (where x is current value at SP-1)
 		fmt.Sprintf("@%s", labelTrue),
-		fmt.Sprintf("D;%s", jumpOp),
-		"M=0", // RAM[SP-1] = 0 (false)
+		fmt.Sprintf("D;%s", jumpOp), // Jump to true branch if true
+
+		// FALSE BRANCH
+		"@SP",       // A = SP Address
+		"A=M-1",     // A = SP-1
+		"M=0",       // RAM[SP-1] = 0 (false)	
+		fmt.Sprintf("@%s", labelEnd),
+		"0;JMP", // Jump to end (skip over true branch)
+
+		// TRUE BRANCH
 		fmt.Sprintf("(%s)", labelTrue),
-		"M=-1", // RAM[SP-1] = -1 (true)
+		"@SP",       // A = SP Address
+		"A=M-1",     // A = SP-1
+		"M=-1", 	// RAM[SP-1] = -1 (true)
+
+		// END
 		fmt.Sprintf("(%s)", labelEnd),
 	)
 }

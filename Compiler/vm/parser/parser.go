@@ -1,11 +1,11 @@
 package parser
 
 import (
+	. "vm/types"
 	"strconv"
 	"strings"
-	. "vm/types"
-	"errors"
 	"fmt"
+	"io"
 )
 
 type VMParser struct {
@@ -14,50 +14,47 @@ type VMParser struct {
 }
 
 func New(input string) *VMParser {
-	cleanLines := func(str string) []string {
-		// Remove Comments
-		// Split Lines
-		return strings.Split(str, "\n")
+	var lines []string
+	// Clean lines; remove comments, trim whitespace on ends, remove empty lines
+	for _, line := range strings.Split(input, "\n") {
+		if i := strings.Index(line, "//"); i >= 0 {
+       		line = line[:i]
+		}
+		line = strings.TrimSpace(line)
+		if line != "" {
+			lines = append(lines, line)
+		}
 	}
 
-	return &VMParser{
-		lines:    cleanLines(input),
-	}
+	return &VMParser{ lines: lines }
 }
 
 func (p *VMParser) IsComplete() bool {
-	return p.index >= len(p.lines) - 1
+	return p.index >= len(p.lines)
 }
-
-func (p *VMParser) nextLine() (string, bool) {
-	isComplete := p.IsComplete()
-	if !isComplete {
-		line := p.lines[p.index]
-		p.index++
-		return line, p.IsComplete()
-	}
-	return "", isComplete
-}
-
-// TODO: IDEA
-// What if instead of (Command, error)
-// It was (Command, bool)
-// And it returns if complete
-// Errors can be printed or maybe its an additional return type idk
 
 func (p *VMParser) NextCommand() (Command, error) {
-	line, isComplete := p.nextLine()
-	if (isComplete) {
-		return Command{}, errors.New("IsComplete") //TODO: ADD ERROR HANDLING
+	// Next Line
+	if p.IsComplete() {
+		return Command{}, io.EOF
 	}
+	line := p.lines[p.index]
+	p.index++
 
+	// Convert line into tokens
 	tokens := strings.Fields(line)
-
 	cmdType, found := getCommandType[tokens[0]]
 	if !found {
-		return Command{}, errors.New(fmt.Sprintf("Not Found, %v", tokens)) // TODO: ADD ERROR HANDLING
+		return Command{}, fmt.Errorf("Not Found, %v", tokens)
 	}
 
+	expectedArgCount := numberOfArguments[cmdType];
+	if len(tokens) < expectedArgCount {
+		return Command{}, fmt.Errorf("Too few arguments: %s", line)
+	}
+
+
+	// Return Command
 	switch cmdType {
 	case ARITHMETIC:
 		op := Operation(tokens[0])
@@ -69,10 +66,8 @@ func (p *VMParser) NextCommand() (Command, error) {
 	case FUNCTION, CALL:
 		index, _ := strconv.Atoi(tokens[2])
 		return Command{ Type: cmdType, Arg1: tokens[1], Arg2: index }, nil
-	case RETURN:
-		return Command{}, nil
-	default:
-	 	return Command{}, nil
+	default: // RETURN
+	return Command{Type: cmdType}, nil
 	}
 }
 
@@ -92,5 +87,18 @@ var getCommandType = map[string]CommandType{
 	"and":    ARITHMETIC,
 	"or":     ARITHMETIC,
 	"not":    ARITHMETIC,
+}
+
+// The number of arguments a certain command type takes
+var numberOfArguments = map[CommandType]int {
+	ARITHMETIC: 1,
+	PUSH: 3,
+	POP: 3,
+	FUNCTION: 3,
+	CALL: 3,
+	RETURN: 1,
+	LABEL: 2,
+	GOTO: 2,
+	IF: 2,
 }
 
